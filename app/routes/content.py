@@ -1,4 +1,8 @@
 from fastapi import APIRouter
+from fastapi import HTTPException
+
+from datetime import datetime,timezone
+
 from bson import ObjectId
 from bson.errors import InvalidId
 
@@ -11,26 +15,58 @@ router = APIRouter()
 @router.post("/content", response_model = AnalysisResult)
 def submit_content(content: Content):
 
-    user = users_collection.find_one({"_id": ObjectId(content.user_id)})
+    try:
+        obj_user_id = ObjectId(content.user_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail = "Invalid user ID format")
+    
+    user = users_collection.find_one({"_id": obj_user_id})
+
     if not user:
-        return {"error": "User not found"}
+        raise HTTPException (status_code=404, detail= "User not found")
     
     content_dict = content.model_dump()
+    content_dict["user_id"] = obj_user_id
+    content_dict["created_at"] = datetime.now(timezone.utc)
     content_collection.insert_one(content_dict)
 
     result = AnalysisResult(text = content.text, toxicity_score = 0.1, label = "Safe")
     return result
 
 @router.get("/content/{user_id}")
-def get_user_content(user_id:str):
+def get_user_content(user_id:str, limit: int = 10):
 
     try:
-        obj_id = ObjectId(user_id)
-    except InvalidId:
-        return {"error": "Invalid user ID format"}
+        obj_user_id = ObjectId(user_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail = "Invalid user ID format")
     
-    user = users_collection.find_one({"_id": ObjectId(user_id)})
+    user = users_collection.find_one({"_id": obj_user_id})
     if not user:
-        return {"error": "User not found"}
-    contents = list(content_collection.find({"user_id":user_id},{"_id":0}))
+        raise HTTPException (status_code=404, detail= "User not found")
+    
+    contents = list(content_collection.find({"user_id":obj_user_id},{"_id":0}).sort("created_at",-1).limit(limit))
+    
+    for content in contents:
+        content["user_id"] = str(content["user_id"])
+
     return contents
+
+@router.get("/content/{user_id}/stats")
+def get_user_stats(user_id: str):
+
+    try:
+        obj_user_id = ObjectId(user_id)
+    except (InvalidId, Exception):
+        raise HTTPException(status_code=400, detail="Invalid user ID format")
+
+    user = users_collection.find_one({"_id": obj_user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    post_count = content_collection.count_documents({"user_id": obj_user_id})
+
+    return {
+        "user_id": user_id,
+        "total_posts": post_count
+    }
