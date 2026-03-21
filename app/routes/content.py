@@ -10,6 +10,8 @@ from app.models.content import Content
 from app.models.analysis import AnalysisResult
 from app.db.collections import content_collection, users_collection
 
+from app.services.analysis import analyse_text
+
 router = APIRouter()
 
 @router.post("/content", response_model = AnalysisResult)
@@ -30,7 +32,8 @@ def submit_content(content: Content):
     content_dict["created_at"] = datetime.now(timezone.utc)
     content_collection.insert_one(content_dict)
 
-    result = AnalysisResult(text = content.text, toxicity_score = 0.1, label = "Safe")
+    prediction = analyse_text(content.text)
+    result = AnalysisResult(text=content.text,toxicity_score=1.0,label=prediction["label"])
     return result
 
 @router.get("/content/{user_id}")
