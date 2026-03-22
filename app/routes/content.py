@@ -32,9 +32,13 @@ def submit_content(content: Content):
     content_dict["created_at"] = datetime.now(timezone.utc)
     content_collection.insert_one(content_dict)
 
-    prediction = analyse_text(content.text)
-    result = AnalysisResult(text=content.text,toxicity_score=1.0,label=prediction["label"])
+    analysis = analyse_text(content.text)
+
+    result = AnalysisResult(text=content.text,toxicity_score=analysis["confidence"],label=analysis["label"],risk=analysis["risk"])
+
     return result
+
+
 
 @router.get("/content/{user_id}")
 def get_user_content(user_id:str, limit: int = 10):
