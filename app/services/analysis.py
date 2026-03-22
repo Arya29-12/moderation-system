@@ -1,27 +1,30 @@
 from app.services.tfidf_service import tfidf_predict
 from app.services.transformer_service import transformer_predict
+from app.services.explain import ShapExplainer
+
+explainer = ShapExplainer()
 
 def analyse_text(text: str):
-    
-    tfidf_result = tfidf_predict(text)
 
+    tfidf_result = tfidf_predict(text)
+    explanation = explainer.explain(text)
+    
     if tfidf_result["confidence"] > 0.75:
-        result = tfidf_result
+        result = tfidf_result    
     else:
         result = transformer_predict(text)
 
-    # default label
     final_label = result["label"]
 
-    # confidence threshold
     if result["confidence"] < 0.6:
         final_label = "normal"
 
-    print(f"[ANALYSIS] text='{text[:50]}...' label={final_label} conf={result['confidence']:.3f}")
-
-    analysis = {
-        "label": final_label,
-        "confidence": result["confidence"]
+    toxicity_score = result["confidence"] if final_label == "toxic" else 0.0
+    analysis = { 
+    "label": final_label,
+    "confidence": result["confidence"],
+    "toxicity_score": toxicity_score,
+    "explanation": explanation
     }
 
     risk = get_risk_level(final_label, result["confidence"])

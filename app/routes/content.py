@@ -67,7 +67,7 @@ def submit_content(content: Content):
             }
         }
     )
-    result = AnalysisResult(text=content.text,toxicity_score=analysis["confidence"],label=analysis["label"],risk=analysis["risk"])
+    result = AnalysisResult(text=content.text,toxicity_score=analysis["toxicity_score"],label=analysis["label"],risk=analysis["risk"],explanation=analysis["explanation"])
 
     return result
 

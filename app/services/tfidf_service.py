@@ -14,7 +14,13 @@ def tfidf_predict(text: str):
     classes = pipeline.classes_
 
     idx = probs.argmax()
-    label = classes[idx]
+    raw_label = classes[idx]
+
+    # fix ambiguous label
+    if raw_label == "hate/toxic":
+        label = "toxic"
+    else:
+        label = raw_label
     confidence = float(probs[idx])
 
     return {
