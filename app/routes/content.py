@@ -33,7 +33,40 @@ def submit_content(content: Content):
     content_collection.insert_one(content_dict)
 
     analysis = analyse_text(content.text)
+    score = analysis["confidence"]
 
+    # ---- FETCH EXISTING STATS ----
+    user_avg = user.get("avg_toxicity", 0.0)
+    total_posts = user.get("total_posts", 0)
+    recent_scores = user.get("recent_scores", [])
+
+    # ---- UPDATE RUNNING AVG ----
+    new_total = total_posts + 1
+    new_avg = ((user_avg * total_posts) + score) / new_total
+
+    # ---- UPDATE RECENT (last 10) ----
+    recent_scores.append(score)
+    if len(recent_scores) > 10:
+        recent_scores.pop(0)
+
+    recent_avg = sum(recent_scores) / len(recent_scores)
+
+    # ---- SPIKE DETECTION ----
+    is_spike = score > (user_avg + 0.4)
+
+    # ---- UPDATE USER ----
+    users_collection.update_one(
+        {"_id": obj_user_id},
+        {
+            "$set": {
+                "avg_toxicity": new_avg,
+                "total_posts": new_total,
+                "recent_scores": recent_scores,
+                "recent_avg": recent_avg,
+                "last_spike": is_spike
+            }
+        }
+    )
     result = AnalysisResult(text=content.text,toxicity_score=analysis["confidence"],label=analysis["label"],risk=analysis["risk"])
 
     return result
@@ -74,6 +107,9 @@ def get_user_stats(user_id: str):
     post_count = content_collection.count_documents({"user_id": obj_user_id})
 
     return {
-        "user_id": user_id,
-        "total_posts": post_count
+         "user_id": user_id,
+         "total_posts": user.get("total_posts", 0),
+         "avg_toxicity": user.get("avg_toxicity", 0.0),
+         "recent_avg": user.get("recent_avg", 0.0),
+        "last_spike": user.get("last_spike", False)
     }
