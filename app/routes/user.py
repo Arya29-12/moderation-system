@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from pymongo.errors import DuplicateKeyError
 
 from app.models.user import User,UserCreate
-from app.db.collections import users_collection
+from app.db import db
 
 from datetime import datetime,timezone
 
@@ -23,7 +23,7 @@ def create_user(user: UserCreate):
     })
 
     try:
-        result = users_collection.insert_one(user_dict)
+        result = db.users_collection.insert_one(user_dict)
     except DuplicateKeyError:
         raise HTTPException(status_code=409, detail="Email already exists")
     return {
