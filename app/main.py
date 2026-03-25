@@ -1,3 +1,4 @@
+print("APP STARTING...")
 from fastapi import FastAPI
 from app.routes import user, content
 from app.db.db import connect_to_mongo
