@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
-@router.post("/users")
+@router.post("/user")
 def get_users():
     return {"message" : "ok"}
 
