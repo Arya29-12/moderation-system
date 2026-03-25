@@ -7,7 +7,8 @@ app = FastAPI()
 
 @app.on_event("startup")
 def startup_event():
-    connect_to_mongo()
+    print("Startup running...")
+    # connect_to_mongo()
 
 app.include_router(user.router)
 app.include_router(content.router)
@@ -15,3 +16,4 @@ app.include_router(content.router)
 @app.get("/")
 def home():
     return {"message": "API Running"}
+
