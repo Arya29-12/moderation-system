@@ -1,15 +1,19 @@
 from fastapi import APIRouter, HTTPException
 
-from pymongo.errors import DuplicateKeyError
+#from pymongo.errors import DuplicateKeyError
 
-from app.models.user import User,UserCreate
-from app.db import db
+#from app.models.user import User,UserCreate
+#from app.db import db
 
-from datetime import datetime,timezone
+#from datetime import datetime,timezone
 
 router = APIRouter()
 
 @router.post("/users")
+def get_users():
+    return {"message" : "ok"}
+
+'''
 def create_user(user: UserCreate):
 
     user_dict = user.model_dump()
@@ -30,3 +34,4 @@ def create_user(user: UserCreate):
         "message":"User created", 
         "user_id": str(result.inserted_id)
         }
+'''
