@@ -2,17 +2,34 @@ from app.services.tfidf_service import tfidf_predict
 from app.services.transformer_service import transformer_predict
 from app.services.explain import ShapExplainer
 
-explainer = ShapExplainer()
+explainer = None
+
+def get_explainer():
+    global explainer
+    if explainer is None:
+        explainer = ShapExplainer()
+    return explainer
 
 def analyse_text(text: str):
 
-    tfidf_result = tfidf_predict(text)
-    explanation = explainer.explain(text)
+    text = text[:512]
     
-    if tfidf_result["confidence"] > 0.75:
-        result = tfidf_result    
+    tfidf_result = tfidf_predict(text)
+
+    explanation = None
+
+    if result["confidence"] < 0.8:
+        explanation = get_explainer().explain(text)
+    
+    conf = tfidf_result["confidence"]
+
+    if conf >= 0.75 or conf <= 0.4:
+        result = tfidf_result
     else:
-        result = transformer_predict(text)
+        try:
+            result = transformer_predict(text)
+        except Exception:
+            result = tfidf_result
 
     final_label = result["label"]
 

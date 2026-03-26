@@ -1,6 +1,6 @@
 from transformers import pipeline
 
-classifier = pipeline("text-classification",model="unitary/toxic-bert")
+classifier = pipeline("text-classification",model="unitary/toxic-bert",truncation=True)
 
 label_map = {"TOXIC": "toxic","INSULT": "toxic","OBSCENE": "sexual","THREAT": "self-harm","IDENTITY_HATE": "toxic"}
 
