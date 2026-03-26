@@ -1,5 +1,5 @@
 from app.services.tfidf_service import tfidf_predict
-from app.services.transformer_service import transformer_predict
+#from app.services.transformer_service import transformer_predict
 from app.services.explain import ShapExplainer
 
 explainer = None
