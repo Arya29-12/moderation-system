@@ -14,7 +14,7 @@ from app.services.analysis import analyse_text
 
 router = APIRouter()
 
-@router.post("/content")#, response_model = AnalysisResult)
+@router.post("/content", response_model = AnalysisResult)
 def submit_content(content: Content):
 
     try:

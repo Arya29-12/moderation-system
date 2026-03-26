@@ -15,7 +15,7 @@ def analyse_text(text: str):
     text = text[:512]
     
     tfidf_result = tfidf_predict(text)
-
+    result = tfidf_result
     explanation = None
 
     if result["confidence"] < 0.8:
