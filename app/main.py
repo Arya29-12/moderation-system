@@ -19,4 +19,7 @@ def startup_db():
 
 @app.on_event("startup")
 def warmup():
-    transformer_predict("test")
+    try:
+        transformer_predict("warmup text")
+    except Exception:
+        pass

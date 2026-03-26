@@ -7,10 +7,10 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from app.models.content import Content
-#from app.models.analysis import AnalysisResult
+from app.models.analysis import AnalysisResult
 from app.db import db
 
-#from app.services.analysis import analyse_text
+from app.services.analysis import analyse_text
 
 router = APIRouter()
 
@@ -31,7 +31,7 @@ def submit_content(content: Content):
     content_dict["user_id"] = obj_user_id
     content_dict["created_at"] = datetime.now(timezone.utc)
     db.content_collection.insert_one(content_dict)
-    '''
+   
     analysis = analyse_text(content.text)
     score = analysis["confidence"]
 
@@ -70,8 +70,7 @@ def submit_content(content: Content):
     result = AnalysisResult(text=content.text,toxicity_score=analysis["toxicity_score"],label=analysis["label"],risk=analysis["risk"],explanation=analysis["explanation"])
 
     return result
-'''
-    return {"message":"submitted content succesfully"}
+
 
 
 @router.get("/content/{user_id}")
