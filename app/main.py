@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.routes import user#, content
-from app.db.db import connect_to_mongo
+from app.db import db as db_module
 
 app = FastAPI()
 
@@ -13,5 +13,5 @@ def home():
 
 @app.on_event("startup")
 def startup_db():
-    connect_to_mongo()
-    print("Connected to Mongo:", db)
+    db_module.connect_to_mongo()
+    print("Connected to Mongo:", db_module.db)
