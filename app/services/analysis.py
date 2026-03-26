@@ -23,14 +23,16 @@ def analyse_text(text: str):
     
     conf = tfidf_result["confidence"]
 
-    if conf >= 0.75 or conf <= 0.4:
-        result = tfidf_result
+  #  if conf >= 0.75 or conf <= 0.4:
+    
+    result = tfidf_result
+    '''
     else:
         try:
             result = transformer_predict(text)
         except Exception:
             result = tfidf_result
-
+    '''
     final_label = result["label"]
 
     if result["confidence"] < 0.6:
