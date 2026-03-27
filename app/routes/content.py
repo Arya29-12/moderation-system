@@ -105,11 +105,7 @@ def get_user_stats(user_id: str):
         raise HTTPException(status_code=404, detail="User not found")
 
     post_count = db.content_collection.count_documents({"user_id": obj_user_id})
-    return{
-        "user_id": user_id,
-        "total_posts": user.get("total_posts", 0)
-    }
-'''
+    
     return {
          "user_id": user_id,
          "total_posts": user.get("total_posts", 0),
@@ -117,4 +113,4 @@ def get_user_stats(user_id: str):
          "recent_avg": user.get("recent_avg", 0.0),
         "last_spike": user.get("last_spike", False)
     }
-    '''
+    
