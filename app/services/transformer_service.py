@@ -1,5 +1,3 @@
-from transformers import pipeline
-
 classifier = None
 
 label_map = {"TOXIC": "toxic","INSULT": "toxic","OBSCENE": "sexual","THREAT": "self-harm","IDENTITY_HATE": "toxic"}
